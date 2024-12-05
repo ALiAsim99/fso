@@ -33,22 +33,21 @@ const App = () => {
    
   const [selected, setSelected] = useState(0);
   const [votes,setVotes]=useState(Array(anecdotes.length).fill(0));
-  const [maxVote, setMax] = useState(0);
+ 
 
   const handleVotes=()=>{
     const newVotes=[...votes]
     newVotes[selected]+=1;
     setVotes(newVotes);
     
-    if(newVotes[selected]>maxVote){
-      setMax(selected);
-    }
+    
   }
   const handleAnecdote=()=>{
     let newSelected=Math.floor(Math.random()*anecdotes.length);
 
     setSelected(newSelected)
   }
+  const maxVote=votes.indexOf(Math.max(...votes));
   return (
     <div>
       <Display text="Anecdote of the day" anecdotes={anecdotes[selected]} votes={votes[selected]}/>
