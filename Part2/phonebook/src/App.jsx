@@ -2,15 +2,15 @@ import { useEffect, useState } from 'react'
 import Filter from './components/Filter'
 import Persons from './components/Persons'
 import Form from './components/Form'
-import axios from 'axios'
+import Notification from './components/Notification'
 import personService from './service/person'
-import person from './service/person'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber,setNewNumber]=useState('')
   const [personFilter,setFilter]=useState('')
+  const [message,setMessage]=useState(null);
 
   useEffect(()=>{
     personService.getAll()
@@ -25,7 +25,11 @@ const App = () => {
     if(confirm){
       personService
       .deletePerson(id)
-      .then(returnPerson=>setPersons(persons.filter(p=>p.id!==returnPerson.id)));
+      .then(returnPerson=>{
+        setPersons(persons.filter(p=>p.id!==returnPerson.id))
+        setMessage(`${findPerson.name} has been deleted successfully`);
+        setTimeout(()=>setMessage(null),500);
+      });
     }
 
   }
@@ -42,6 +46,11 @@ const App = () => {
           personService
           .update(id,newPerson)
           .then(returnPerson=>setPersons(persons.map(p=>p.id==id?returnPerson:p)))
+          .catch(e=>{
+            setMessage(`${duplicatePerson.name} has already been removed`);
+            setTimeout(()=>setMessage(null),500);
+            setPersons(persons.filter(p=>p.id!==id));
+          })
           setNewName("")
           setNewNumber("")
       }
@@ -54,7 +63,11 @@ const App = () => {
     }
     
     personService.create(newPerson)
-    .then(person=> setPersons(persons.concat(person)))
+    .then(person=> {
+      setPersons(persons.concat(person))
+      setMessage(`${newPerson.name} has been added successfully`);
+        setTimeout(()=>setMessage(null),500);
+    })
     setNewName("")
     setNewNumber("")
   }
@@ -69,6 +82,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification message={message}/>
       <Filter value={personFilter} setFilter={setFilter}/>
       <Form addPerson={addPerson} newName={newName} newNumber={newNumber} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange}/>
       <Persons showPersons={showPersons} deletePerson={deletePerson}/>
