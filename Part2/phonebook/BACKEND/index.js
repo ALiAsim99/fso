@@ -109,7 +109,8 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
-app.use(express.static("dist")); // Serve the frontend build
+app.use(express.static('dist'));
+ // Serve the frontend build
 
 let persons = [
   { id: "1", name: "Arto Hellas", number: "040-123456" },
